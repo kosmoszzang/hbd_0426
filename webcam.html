@@ -1,0 +1,79 @@
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>생일 기념 사진  </title>
+        <link rel="stylesheet" href="https://jeondaye.github.io/btd_event/style.css">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    </head>
+<body>
+    <main id="camera">
+        <canvas id="camera--sensor"></canvas>
+
+        <!-- 기기의 카메라에 접근하여 영상을 페이지에 재생한다. -->
+        <video id="camera--view" autoplay="" playsinline=""></video>
+            <div class="templete blind">
+                <img src="//:0" alt="" id="camera--output">
+                <div class="btd_txt blind">
+                    <p>🎂  22.11.04 🎂</p>
+                    <p>🥳 HAPPY 27th BIRTHDAY 🥳</p>
+                </div>
+            </div>
+
+            <div class="camera_btn">
+                <button id="camera--trigger">🤳 생일 기념 폴라로이드 📸</button>
+<!--                 <button id="camera--switch" onClick="window.location.reload()"><i class='bx bx-repeat'></i></button> -->
+            </div>
+            <p class="cam_notice">위 버튼을 클릭 후 결과물을 캡쳐하세요^^</p>
+    </main>
+
+    <script>
+
+        let constraints = { video: { facingMode: "environment"}, audio: false};
+        // let constraints2 = { video: { facingMode: "user"}, audio: false};
+        const cameraView = document.querySelector("#camera--view");
+        const cameraOutput = document.querySelector("#camera--output");
+        const cameraSensor = document.querySelector("#camera--sensor");
+        const cameraTrigger = document.querySelector("#camera--trigger");
+
+
+        function cameraStart(){
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream){
+                    track = stream.getTracks()[0];
+                    cameraView.srcObject = stream;
+
+                })
+                .catch(function(error){
+                    console.error("카메라에 문제가 있습니다.", error);
+                })
+        }
+
+        //촬영 버튼 클릭 리스너
+        cameraTrigger.addEventListener("click", function(){
+            
+            cameraSensor.width = cameraView.videoWidth; //640으로 정해져서 나오네?
+            cameraSensor.height = cameraView.videoHeight;
+            cameraSensor.getContext("2d").drawImage(cameraView, 0, 0);
+            cameraOutput.src = cameraSensor.toDataURL("image/webp");
+            cameraOutput.classList.add("taken");
+            console.log(cameraSensor.height);
+        });
+
+        $('#camera--trigger').on("click", function(){
+            $('.blind').css('display','block');
+            $('#header > p').css('display','none');
+            $('#camera--trigger').css('display','none');
+            $('#camera--switch').css('display','none');
+            $('.cam_notice').css('display','none');
+            $('#camera--sensor').css('display','none');
+            $('#camera--view').css('display','none');
+        });
+    
+        // 페이지가 로드되면 함수 실행
+        window.addEventListener("load", cameraStart, false);
+    </script>
+</body>
+</html>
